@@ -1,17 +1,14 @@
 package main.java.app;
 
-import main.java.gui.LoginMenu;
-import main.java.socket.Client;
+import main.java.socket.Server;
 
 import java.io.IOException;
 
 public class Main {
 	public static void main(String[] args) {
 		try {
-			Client client = new Client();
-			
-			LoginMenu loginMenu = new LoginMenu(client);
-			loginMenu.setVisible(true);
+			Server server = new Server(5000);
+			server.start();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -1,20 +1,24 @@
 package main.java.gui;
 
-import main.java.app.AppManager;
 import main.java.models.User;
+import main.java.socket.Client;
 
 import javax.swing.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
 public class LoginMenu extends JFrame {
+	private final Client CLIENT;
+	
 	private JPanel mainPanel;
 	private JTextField usernameTextField;
 	private JButton loginButton;
 	private JLabel errorLabel;
 	
-	public LoginMenu() {
+	public LoginMenu(Client client) {
 		super("Chet | Login Menu");
+		
+		this.CLIENT = client;
 		
 		setContentPane(mainPanel);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -49,10 +53,16 @@ public class LoginMenu extends JFrame {
 		loginButton.addActionListener(
 				e -> {
 					var name = usernameTextField.getText();
-					var user = new User(name);
 					
-					if (AppManager.addUser(user)) {
-						ChetRoom chetRoom = new ChetRoom(user);
+					CLIENT.sendRequest("LOGIN");
+					CLIENT.sendRequest(name);
+					
+					var response = CLIENT.getResponse();
+					
+					if (response.equals("ACCEPT")) {
+						CLIENT.user = new User(name);
+						
+						ChetRoom chetRoom = new ChetRoom(CLIENT);
 						this.setVisible(false);
 						chetRoom.setVisible(true);
 					} else {

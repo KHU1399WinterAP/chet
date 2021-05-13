@@ -1,26 +1,26 @@
 package main.java.gui;
 
-import main.java.app.AppManager;
-import main.java.models.User;
+import main.java.socket.ChetSyncer;
+import main.java.socket.Client;
+import main.java.utils.StringUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class ChetRoom extends JFrame {
-	private final User USER;
+	public final Client CLIENT;
 	
 	private JPanel mainPanel;
 	private JTextArea chetTextArea;
 	private JTextField chetTextField;
 	private JButton sendButton;
 	
-	public ChetRoom(User user) {
+	public ChetRoom(Client client) {
 		super("Chet | Chet Room");
 		
-		this.USER = user;
+		this.CLIENT = client;
 		
 		setContentPane(mainPanel);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -30,6 +30,13 @@ public class ChetRoom extends JFrame {
 		setLocationRelativeTo(null);
 		
 		initListeners();
+		
+		CLIENT.sendRequest("CHET");
+		new ChetSyncer(this).start();
+	}
+	
+	public void updateChet(String chet) {
+		chetTextArea.setText(chet);
 	}
 	
 	private void initListeners() {
@@ -62,15 +69,14 @@ public class ChetRoom extends JFrame {
 	}
 	
 	private void sendMessage() {
-		var message = AppManager.normalize(chetTextField.getText());
+		var message = StringUtils.normalize(chetTextField.getText());
 		
 		if (message.isBlank())
 			return;
 		
-		// TODO: send a request to server
-		
-		var oldChet = chetTextArea.getText();
-		chetTextArea.setText(oldChet + "\n" + USER.name + ": " + message);
+		CLIENT.sendRequest("SEND");
+		CLIENT.sendRequest(CLIENT.user.name);
+		CLIENT.sendRequest(message);
 		
 		chetTextField.setText("");
 	}
