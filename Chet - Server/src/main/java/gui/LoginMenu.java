@@ -49,9 +49,10 @@ public class LoginMenu extends JFrame {
 		loginButton.addActionListener(
 				e -> {
 					var name = usernameTextField.getText();
+					var user = new User(name);
 					
-					if (AppManager.addUser(new User(name))) {
-						ChetRoom chetRoom = new ChetRoom();
+					if (AppManager.addUser(user)) {
+						ChetRoom chetRoom = new ChetRoom(user);
 						this.setVisible(false);
 						chetRoom.setVisible(true);
 					} else {

@@ -13,14 +13,18 @@ public class AppManager {
 	}
 	
 	public static boolean addUser(User user) {
-		user.name = user.name.replaceAll(" +", " ");
-		user.name = user.name.trim();
+		user.name = normalize(user.name);
 		
 		if (!isValidName(user.name))
 			return false;
 		
 		USERS.add(user);
 		return true;
+	}
+	
+	public static String normalize(String text) {
+		text = text.replaceAll(" +", " ");
+		return text.trim();
 	}
 	
 	private static boolean isValidName(String name) {
